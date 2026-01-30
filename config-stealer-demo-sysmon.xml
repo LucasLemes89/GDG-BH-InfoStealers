@@ -1,0 +1,43 @@
+<Sysmon schemaversion="4.50">
+  <HashAlgorithms>md5,sha256</HashAlgorithms>
+  <EventFiltering>
+
+    <RuleGroup name="Execucao_Scripts" groupRelation="or">
+      <ProcessCreate onmatch="include">
+        <Image condition="contains">python.exe</Image>
+        <Image condition="contains">powershell.exe</Image>
+        <CurrentDirectory condition="contains">\AppData\Local\Temp</CurrentDirectory>
+      </ProcessCreate>
+    </RuleGroup>
+
+    <RuleGroup name="Coleta_Credenciais" groupRelation="or">
+      <FileCreate onmatch="include">
+        <TargetFilename condition="contains">\AppData\Local\Temp\</TargetFilename>
+        <TargetFilename condition="end with">.zip</TargetFilename>
+        <TargetFilename condition="contains">logins.json</TargetFilename>
+        <TargetFilename condition="contains">key4.db</TargetFilename>
+      </FileCreate>
+    </RuleGroup>
+
+    <RuleGroup name="Exfiltracao_Rede" groupRelation="or">
+      <NetworkConnect onmatch="include">
+        <DestinationHostname condition="contains">api.telegram.org</DestinationHostname>
+        <DestinationHostname condition="contains">discord.com</DestinationHostname>
+        <DestinationHostname condition="contains">discordapp.com</DestinationHostname>
+      </NetworkConnect>
+      
+      <NetworkConnect onmatch="exclude">
+        <Image condition="contains">Telegram.exe</Image>
+        <Image condition="contains">Discord.exe</Image>
+      </NetworkConnect>
+    </RuleGroup>
+
+    <RuleGroup name="Persistencia_Registry" groupRelation="or">
+      <RegistryEvent onmatch="include">
+        <TargetObject condition="contains">Microsoft\Windows\CurrentVersion\Run</TargetObject>
+        <TargetObject condition="contains">Microsoft\Windows\CurrentVersion\RunOnce</TargetObject>
+      </RegistryEvent>
+    </RuleGroup>
+
+  </EventFiltering>
+</Sysmon>
