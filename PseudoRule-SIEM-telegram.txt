@@ -1,0 +1,5 @@
+SELECT process_name, destination_url 
+FROM network_events 
+WHERE destination_url CONTAINS "api.telegram.org" 
+AND process_path NOT IN ("C:\Program Files\Telegram Desktop\Telegram.exe", "C:\Windows\System32\curl.exe")
+AND user_context != "Admin";
