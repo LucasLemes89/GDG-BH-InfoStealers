@@ -1,0 +1,13 @@
+SELECT 
+    timestamp, 
+    process_name, 
+    destination_url, 
+    source_ip, 
+    user_agent
+FROM network_events
+WHERE destination_url LIKE "https://discord.com/api/webhooks/%"
+   OR destination_url LIKE "https://discordapp.com/api/webhooks/%"
+-- Exclui o processo legítimo do Discord para reduzir falsos positivos
+AND process_path NOT LIKE "%AppData%\Local\Discord\app-%\Discord.exe"
+-- Monitora User-Agents genéricos comuns em scripts de malware
+AND (user_agent LIKE "python-requests%" OR user_agent LIKE "Go-http-client%" OR user_agent IS NULL);
